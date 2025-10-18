@@ -1,43 +1,60 @@
-Frontend (Vite + React + TypeScript)
+# Frontend (Vite + React + TypeScript)
 
-Deskripsi Singkat
-- Aplikasi web untuk katalog dan transaksi sewa Nintendo Switch.
-- Clean Architecture di sisi frontend untuk memisahkan domain, use case, repository, dan view.
+Ringkasan
+- UI katalog dan transaksi sewa (Switch, PS3, PS4, PS5).
+- Responsif untuk mobile/desktop, navbar mobile toggle, hero modern.
+- Katalog bergambar dengan badge platform, tombol Sewa, notifikasi `react-hot-toast`.
+- Data katalog dapat memakai dummy lokal atau HTTP API.
 
 Teknologi
-- Vite 5, React 18, TypeScript 5, Tailwind CSS, react-hot-toast.
+- Vite 5, React 18, TypeScript 5, Tailwind CSS 3, react-hot-toast.
 
 Arsitektur (Clean Architecture)
-- Domain: entity murni (Console, Rental) + kontrak repository.
+- Domain: entitas murni (Console, Rental) + kontrak repository.
 - Application: use case (GetAvailableConsoles, CreateRental, ReturnRental).
-- Infrastructure: implementasi repository HTTP + api client (fetch).
+- Infrastructure: repository HTTP dan dummy + API client (fetch).
 - Presentation: komponen UI (Navbar, ConsoleCard) dan halaman (HomePage).
-- Composition: wiring instansiasi use case dan repository (service locator sederhana).
+- Composition: service locator sederhana di `src/composition/di.ts`.
 
 Struktur Direktori
-- `src/domain` – entities dan repository interface
+- `src/domain` – entities dan interface repository
 - `src/application` – use cases
-- `src/infrastructure` – api client dan repository HTTP
+- `src/infrastructure` – api client dan repository (HTTP/Dummy)
 - `src/presentation` – components dan pages (UI)
-- `src/composition/di.ts` – komposisi dependency/use case
-- `src/App.tsx` – root UI yang merender halaman
+- `src/composition/di.ts` – wiring dependency/use case
+- `src/App.tsx` – root UI
 
-Menjalankan Proyek
-1) Backend aktif
-- Jalankan backend di `express-api` (default port 3000).
+Menjalankan
+1) Backend (opsional untuk transaksi nyata)
+- Jalankan `express-api` (default http://localhost:3000) jika ingin Create/Return tersambung DB.
 
-2) Frontend dev
-- `cd frontend && npm install`
-- `npm run dev` lalu buka http://localhost:5173
-- Proxy dev sudah mengarah `/api` → `http://localhost:3000` (tidak perlu CORS).
+2) Dev server
+```bash
+cd frontend
+npm install
+npm run dev
+```
+Lalu buka http://localhost:5173.
 
 3) Build & preview
-- `npm run build`
-- `npm run preview`
+```bash
+npm run build
+npm run preview
+```
 
-Konfigurasi Lingkungan
-- Dev default menggunakan proxy. Untuk produksi, set `VITE_API_BASE_URL` (lihat `.env.example`).
+Konfigurasi
+- Proxy dev ke backend: lihat `vite.config.ts` (env `VITE_PROXY_TARGET`, default `http://localhost:3000`).
+- Base URL API produksi: `VITE_API_BASE_URL` (fallback ke `/api`). Lihat `.env.example`.
 
-Catatan Desain
-- Use case dan repository dipisahkan dari komponen untuk memudahkan pengujian dan perawatan.
-- Styling konsisten menggunakan Tailwind utility classes dengan tema brand sederhana.
+Data Katalog: Dummy vs HTTP
+- Default: Dummy (lihat `src/composition/di.ts`) menggunakan `DummyConsoleRepository` dengan gambar lokal:
+  - `public/images/switch.jpg|ps3.jpg|ps4.jpg|ps5.jpg`
+- Untuk data nyata dari backend, ubah di `src/composition/di.ts`:
+  - Ganti `new DummyConsoleRepository()` menjadi `new HttpConsoleRepository()`.
+- Catatan: Aksi “Buat Sewa” dan “Pengembalian” tetap memakai HTTP ke backend.
+
+Desain/UX
+- Responsif: grid katalog (`sm`, `lg`, `xl`), button full‑width di mobile.
+- Navbar dengan menu toggle di mobile.
+- Hero memakai gambar modern `public/images/hero-modern.jpg`.
+

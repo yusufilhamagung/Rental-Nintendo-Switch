@@ -1,19 +1,19 @@
-API Sewa Nintendo Switch (TypeScript)
+# API Sewa Nintendo Switch (TypeScript)
 
-Deskripsi Singkat
-- REST API untuk menyewa Nintendo Switch, ditulis dengan TypeScript, Express, dan MySQL2.
-- Menggunakan prinsip Clean Architecture untuk memisahkan Domain, Application (Use Case), Infrastructure, dan Interfaces.
+Ringkasan
+- REST API untuk katalog dan transaksi sewa: daftar konsol tersedia, buat sewa, pengembalian.
+- Clean Architecture: Domain, Application (Use Case), Infrastructure (MySQL), Interfaces (HTTP/Express).
 
 Teknologi
-- Node.js 18+, Express 4, MySQL2 (promise), dotenv, TypeScript 5.
+- Node.js 18+, Express 4, TypeScript 5, mysql2 (promise), dotenv.
 
-Arsitektur (Clean Architecture)
-- Domain: entity murni (Console, Rental) + kontrak repository.
-- Application: use case terisolasi (GetAvailableConsoles, CreateRental, ReturnRental).
-- Infrastructure: implementasi repository (MySQL), koneksi DB (pool).
+Arsitektur
+- Domain: entity (Console, Rental) + kontrak repository.
+- Application: use case (GetAvailableConsoles, CreateRental, ReturnRental).
+- Infrastructure: koneksi DB (pool) dan repository MySQL.
 - Interfaces: HTTP layer (controller, routes, middleware error).
 
-Struktur Direktori
+Struktur
 - `src/domain` – entities dan repository interface
 - `src/application` – use cases
 - `src/infrastructure` – DB pool dan repository MySQL
@@ -22,18 +22,34 @@ Struktur Direktori
 - `src/app.ts` – inisialisasi Express
 - `src/server.ts` – bootstrap server
 
-Menjalankan Proyek
+Menjalankan
 1) Konfigurasi environment
-- Salin `.env.example` menjadi `.env` dan sesuaikan kredensial DB.
+```bash
+cp .env.example .env
+# Sesuaikan:
+# DB_HOST=127.0.0.1
+# DB_PORT=3306
+# DB_USER=root
+# DB_PASSWORD=
+# DB_NAME=db_express_api
+```
 
 2) Siapkan database
-- Jalankan SQL `db/schema.sql:1` pada database tujuan untuk membuat tabel dan data contoh.
+- Jalankan SQL `db/schema.sql` pada MySQL target untuk membuat tabel dan data contoh.
+- Opsi Docker cepat:
+```bash
+docker run --name switch-mysql -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=db_express_api -p 3306:3306 -d mysql:8
+docker cp db/schema.sql switch-mysql:/tmp/schema.sql
+docker exec -i switch-mysql sh -c "mysql -uroot -proot db_express_api < /tmp/schema.sql"
+```
 
-3) Install & jalankan
-- `cd express-api && npm install`
-- Dev: `npm run dev`
-- Build: `npm run build`
-- Start: `npm start`
+3) Install & start
+```bash
+npm install
+npm run dev     # hot reload (ts-node-dev)
+# atau
+npm run build && npm start
+```
 
 Endpoints
 - GET `/api/health` – health check
@@ -41,7 +57,7 @@ Endpoints
 - POST `/api/rentals` – body: `{ consoleId, customerName, days }`
 - POST `/api/rentals/:id/return` – pengembalian rental
 
-Catatan Desain
-- Validasi sederhana dilakukan di layer use case; error konsisten via `AppError` dan middleware error.
-- DB pool diinisialisasi saat start untuk fail-fast pada mis-konfigurasi.
+Catatan
+- `DB_STARTUP_CHECK=true` akan warm‑up koneksi DB non‑blocking saat start.
+- Server mencari port tersedia mulai dari `PORT` env (default 3000).
 
