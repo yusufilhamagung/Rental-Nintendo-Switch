@@ -1,0 +1,42 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# TypeScript build output
+dist/
+build/
+
+# Env files
+.env
+.env.local
+.env.*.local
+express-api/.env
+
+# Logs
+logs/
+*.log
+*.log.*
+
+# Coverage
+coverage/
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.iml
+
+# Cache
+.cache/
+tmp/
+
+# Misc
+*.tsbuildinfo
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
